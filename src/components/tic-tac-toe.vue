@@ -6,6 +6,7 @@
       </div>
     </div>
     <button @click="reset">reset</button>
+    <div class="cover" :style="display ? `display:block` : `display:none`"></div>
   </div>
 </template>
 
@@ -15,6 +16,7 @@ export default {
   setup(props) {
     let maru = reactive([]);
     let active = reactive([]);
+    let display = ref(true);
 
     const reset = () => {
       for (let i = 1; i < 4; i++) {
@@ -25,6 +27,7 @@ export default {
           active[i][j] = false;
         }
       }
+      display.value = false;
     };
     reset();
     let turn = true;
@@ -42,45 +45,52 @@ export default {
       count++;
       if (count > 4) {
         whoWin();
+        if (count == 9) {
+          setTimeout(() => { alert("Over \nPlay again? \nPlease click reset button."); }, 50);
+        }
       }
     };
 
-    const whoWin = () => {
-      let win = false;
+    const win = () => {
       if (active[1][1] == true &&
         active[1][1] == active[2][2] && active[2][2] == active[3][3] &&
         maru[1][1] == maru[2][2] && maru[2][2] == maru[3][3]) {
         console.log("1");
-        win = true;
+        return true;
       } else if (active[1][3] == true &&
         active[1][3] == active[2][2] && active[2][2] == active[3][1] &&
         maru[1][3] == maru[2][2] && maru[2][2] == maru[3][1]) {
         console.log("2");
-        win = true;
+        return true;
       }
       for (let i = 1; i < 4; i++) {
         if (active[i][1] == true &&
           active[i][1] == active[i][2] && active[i][2] == active[i][3] &&
           maru[i][1] == maru[i][2] && maru[i][2] == maru[i][3]) {
           console.log("3");
-          win = true;
+          return true;
         } else if (active[1][i] == true &&
           active[1][i] == active[2][i] && active[2][i] == active[3][i] &&
           maru[1][i] == maru[2][i] && maru[2][i] == maru[3][i]) {
           console.log("4");
-          win = true;
+          return true;
         }
       }
+    };
 
-      if (win) {
+    const whoWin = () => {
+      if (win()) {
+        display.value = true;
         setTimeout(() => { alert(!turn ? "OO win !!!" : "XX win !!!"); }, 10);
         return;
       }
     };
 
+
     return {
       maru,
       active,
+      display,
       tic,
       reset,
     };
@@ -97,6 +107,7 @@ export default {
 }
 
 .tic-tac-toe {
+  position: relative;
   width: 300px;
   margin: 50px auto;
   text-align: center;
@@ -150,6 +161,15 @@ export default {
   button {
     font-size: 16px;
     margin-top: 10px;
+  }
+
+  .cover {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 300px;
+    height: 300px;
+    background: #0000;
   }
 }
 </style>
