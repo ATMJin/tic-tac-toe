@@ -14,11 +14,20 @@
 import { ref, reactive } from 'vue';
 export default {
   setup(props) {
+    // 圈圈，用兩個陣列表示位置，true是圈
     let maru = reactive([]);
+    // 是否已被按，用兩個陣列表示位置，true是已經按了
     let active = reactive([]);
+    // 最上層是否覆蓋，false是display:none
     let display = ref(true);
+    // 下的次數
+    let count = 0;
+    // 輪到誰
+    let turn = true;
 
+    // 歸零
     const reset = () => {
+      // 全部都設成圈且未按
       for (let i = 1; i < 4; i++) {
         maru[i] = [];
         active[i] = [];
@@ -27,15 +36,17 @@ export default {
           active[i][j] = false;
         }
       }
+      count = 0;
       display.value = false;
+      turn = true;
     };
     reset();
-    let turn = true;
-    let count = 0;
 
-
+    // 點擊事件
     const tic = (e) => {
+      // 獲取位置
       let local = e.target.dataset.local.split(',');
+      // 已被點過直接跳出函式
       if (active[local[0]][local[1]]) {
         return;
       }
@@ -43,14 +54,17 @@ export default {
       active[local[0]][local[1]] = true;
       turn = !turn;
       count++;
+      // 判斷輸贏
       if (count > 4) {
         whoWin();
         if (count == 9) {
+          // 平手
           setTimeout(() => { alert("Over \nPlay again? \nPlease click reset button."); }, 50);
         }
       }
     };
 
+    // 贏了回傳true
     const win = () => {
       if (active[1][1] == true &&
         active[1][1] == active[2][2] && active[2][2] == active[3][3] &&
